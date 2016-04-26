@@ -1,16 +1,3 @@
-function init() {
-  var paragraph = getParagraph();
-  var grid = createGrid(paragraph);
-  var pieces = divideGrid(grid);
-  showGrid(grid);
-}
-
-function getParagraph() {
-  var paragraph = "Mi dibujo no representaba un sombrero. Representaba una serpiente boa que digería un elefante. Dibujé entonces el interior de la serpiente boa a fin de que las personas grandes pudiesen comprender. Siempre necesitan explicaciones.";
-  var paragraph2 = "Una de sus más importantes habilidades será, siempre, la de extraer de cuanto lo rodea la esencia y la energía que le permitan vivir y crecer artísticamente. Y lo mismo de las personas. Las exprime, utilizando lo mejor de cada una.";
-  return paragraph;
-}
-
 function createGrid(paragraph) {
   var grid = [];
   var heigth = calculateDimensions(paragraph);
@@ -51,26 +38,11 @@ function createGrid(paragraph) {
   }
 }
 
-function showGrid(grid) {
-  var table = $('<table>');
-  for (var x = 0; x < grid.length; x++) {
-    var row = $('<tr>');
-    for (var y = 0; y < grid[x].length; y++) {
-      var element = $('<td>').text(grid[x][y]);
-      if (grid[x][y] === ' ' || grid[x][y] === '') {
-        element.addClass('whitespace');
-      }
-      row.append(element);
-    }
-    table.append(row);
-  }
-  $('body').append(table);
-}
-
 function divideGrid(grid) {
   var filling = [];
   var blocks = sampleBlocks();
   var unplacedPieces = 0;
+  var pieceId = 1;
 
   for (var x in grid) {
     var row = [];
@@ -84,26 +56,74 @@ function divideGrid(grid) {
     var randomPiece = blocks[Math.floor(Math.random() * 6)];
     randomPiece = rotatePiece(randomPiece, Math.floor(Math.random() * 4));
     randomPiece = isolate(randomPiece);
-    consoleShowPiece(randomPiece);
-    console.log(randomPiece);
-    if(!placePiece(grid, randomPiece)) {
+    if (!placePiece(filling, randomPiece, pieceId)) {
       unplacedPieces++;
     } else {
       unplacedPieces = 0;
+      pieceId++;
     }
   }
+  for (var xF = 0; xF < filling.length; xF++) {
+    for (var yF = 0; yF < filling[xF].length; yF++) {
+      while (filling[xF][yF] === 0) {
+        var side = Math.floor(Math.random() * 4);
+        switch (side) {
+          case 0:
+            if(filling[xF] && filling[xF][yF-1]) {
+              filling[xF][yF] = filling[xF][yF-1];
+            }
+            break;
+          case 1:
+            if(filling[xF+1] && filling[xF+1][yF]) {
+              filling[xF][yF] = filling[xF+1][yF];
+            }
+            break;
+          case 2:
+            if(filling[xF] && filling[xF][yF+1]) {
+              filling[xF][yF] = filling[xF][yF+1];
+            }
+            break;
+          case 3:
+            if(filling[xF-1] && filling[xF-1][yF]) {
+              filling[xF][yF] = filling[xF-1][yF];
+            }
+            break;
+        }
+      }
+    }
+  }
+  consoleShowGrid(filling);
 }
 
-function placePiece(grid, piece) {
+function placePiece(grid, piece, pieceId) {
   var placed = false;
-  for (var x in grid) {
-    for (var y in grid[x]) {
-      if (grid[x][y] === 0) {
-
+  for (var x = 0; !placed && x < grid.length; x++) {
+    for (var y = 0; !placed && y < grid[x].length; y++) {
+      if (!checkCollision(grid, piece, x, y)) {
+        for (var xP = 0; xP < piece.length; xP++) {
+          for (var yP = 0; yP < piece[xP].length; yP++) {
+            if (piece[xP][yP] !== 0) {
+              grid[x + xP][y + yP] = pieceId;
+              placed = true;
+            }
+          }
+        }
       }
     }
   }
   return placed;
+}
+
+function checkCollision(grid, piece, x, y) {
+  var collision = false;
+  for (var xP = 0; xP < piece.length; xP++) {
+    for (var yP = 0; yP < piece[xP].length; yP++) {
+      if (grid[x + xP] === undefined || grid[x + xP][y + yP] === undefined || (grid[x + xP][y + yP] !== 0 && piece[xP][yP] === 1)) {
+        collision = true;
+      }
+    }
+  }
+  return collision;
 }
 
 function rotatePiece(piece, rotation) {
@@ -211,41 +231,4 @@ function sampleBlocks() {
     ],
   ];
   return pieces;
-}
-
-function consoleShowPiece(piece) {
-  var l1 = '',
-    l2 = '',
-    l3 = '',
-    l4 = '';
-  for (var x in piece) {
-    for (var y in piece[x]) {
-      switch (x) {
-        case '0':
-          l1 += piece[x][y];
-          break;
-        case '1':
-          l2 += piece[x][y];
-          break;
-        case '2':
-          l3 += piece[x][y];
-          break;
-        case '3':
-          l4 += piece[x][y];
-          break;
-      }
-    }
-  }
-  if (l1) {
-    console.log(l1);
-  }
-  if (l2) {
-    console.log(l2);
-  }
-  if (l3) {
-    console.log(l3);
-  }
-  if (l4) {
-    console.log(l4);
-  }
 }
