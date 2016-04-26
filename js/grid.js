@@ -70,7 +70,7 @@ function showGrid(grid) {
 function divideGrid(grid) {
   var filling = [];
   var blocks = sampleBlocks();
-  var full = false;
+  var unplacedPieces = 0;
 
   for (var x in grid) {
     var row = [];
@@ -80,27 +80,30 @@ function divideGrid(grid) {
     filling.push(row);
   }
 
-  while (!full) {
-    var randomPiece = blocks[ Math.floor(Math.random() * 6)];
+  while (unplacedPieces < 10) {
+    var randomPiece = blocks[Math.floor(Math.random() * 6)];
     randomPiece = rotatePiece(randomPiece, Math.floor(Math.random() * 4));
     randomPiece = isolate(randomPiece);
     consoleShowPiece(randomPiece);
-    full = isFull(filling);
-  }
-}
-
-function pieceFits(grid, piece) {
-  for(var x in grid) {
-    for(var y in grid[x]) {
-      if(grid[x][y] === 0) {
-
-      }
+    console.log(randomPiece);
+    if(!placePiece(grid, randomPiece)) {
+      unplacedPieces++;
+    } else {
+      unplacedPieces = 0;
     }
   }
 }
 
-function isFull(grid) {
-  return true;
+function placePiece(grid, piece) {
+  var placed = false;
+  for (var x in grid) {
+    for (var y in grid[x]) {
+      if (grid[x][y] === 0) {
+
+      }
+    }
+  }
+  return placed;
 }
 
 function rotatePiece(piece, rotation) {
@@ -116,71 +119,133 @@ function rotatePiece(piece, rotation) {
       rotated.push(row);
     }
   } else if (rotation === 2) {
-    rotated = rotatePiece(rotatePiece(piece, 1),1);
-  } else if(rotation === 3) {
-    rotated = rotatePiece(rotatePiece(rotatePiece(piece, 1),1),1);
+    rotated = rotatePiece(rotatePiece(piece, 1), 1);
+  } else if (rotation === 3) {
+    rotated = rotatePiece(rotatePiece(rotatePiece(piece, 1), 1), 1);
   }
   return rotated;
 }
 
-function isolate(piece) {
-  var isOnTop = false;
-  for(var x in piece) {
-
+function isolate(a) {
+  var b = [];
+  var zeros = false;
+  for (var i in a) {
+    zeros = true;
+    for (var j in a[i]) {
+      if (a[i][j] !== 0) {
+        zeros = false;
+      }
+    }
+    if (!zeros) {
+      b.push(a[i]);
+    }
   }
+  var c = [];
+  for (var y = 0; y < 4; y++) {
+    zeros = true;
+    for (var x in b) {
+      if (b[x][y] !== 0) {
+        zeros = false;
+      }
+    }
+    c.push([]);
+    if (!zeros) {
+      for (var x1 in b) {
+        c[y].push(b[x1][y]);
+      }
+    }
+  }
+  for (var x2 = 0; x2 < c.length; x2++) {
+    if (c[x2].length === 0) {
+      c.splice(x2, 1);
+      x2--;
+    }
+  }
+  return c;
 }
 
 function sampleBlocks() {
   //We are gonna use tetris blocks as first sample
-  var pieces = [];
-  pieces.push([
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-    [1, 0, 0, 0]
-  ]);
-  pieces.push([
-    [1, 0, 0, 0],
-    [1, 0, 0, 0],
-    [1, 1, 0, 0],
-    [0, 0, 0, 0]
-  ]);
-  pieces.push([
-    [0, 1, 0, 0],
-    [1, 1, 1, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0]
-  ]);
-  pieces.push([
-    [1, 1, 0, 0],
-    [1, 1, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0]
-  ]);
-  pieces.push([
-    [1, 0, 0, 0],
-    [1, 1, 0, 0],
-    [0, 1, 0, 0],
-    [0, 0, 0, 0]
-  ]);
-  pieces.push([
-    [0, 1, 0, 0],
-    [1, 1, 0, 0],
-    [1, 0, 0, 0],
-    [0, 0, 0, 0]
-  ]);
-  pieces.push([
-    [0, 1, 0, 0],
-    [0, 1, 0, 0],
-    [1, 1, 0, 0],
-    [0, 0, 0, 0]
-  ]);
+  var pieces = [
+    [
+      [1, 0, 0, 0],
+      [1, 0, 0, 0],
+      [1, 0, 0, 0],
+      [1, 0, 0, 0]
+    ],
+    [
+      [1, 0, 0, 0],
+      [1, 0, 0, 0],
+      [1, 1, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    [
+      [0, 1, 0, 0],
+      [1, 1, 1, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    [
+      [1, 1, 0, 0],
+      [1, 1, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    [
+      [1, 0, 0, 0],
+      [1, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    [
+      [0, 1, 0, 0],
+      [1, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    [
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [1, 1, 0, 0],
+      [0, 0, 0, 0]
+    ],
+  ];
   return pieces;
 }
 
 function consoleShowPiece(piece) {
-  console.log(piece[0][0] + '' + piece[1][0] + '' + piece[2][0] + '' + piece[3][0]);
-  console.log(piece[0][1] + '' + piece[1][1] + '' + piece[2][1] + '' + piece[3][1]);
-  console.log(piece[0][2] + '' + piece[1][2] + '' + piece[2][2] + '' + piece[3][2]);
-  console.log(piece[0][3] + '' + piece[1][3] + '' + piece[2][3] + '' + piece[3][3]);
+  var l1 = '',
+    l2 = '',
+    l3 = '',
+    l4 = '';
+  for (var x in piece) {
+    for (var y in piece[x]) {
+      switch (x) {
+        case '0':
+          l1 += piece[x][y];
+          break;
+        case '1':
+          l2 += piece[x][y];
+          break;
+        case '2':
+          l3 += piece[x][y];
+          break;
+        case '3':
+          l4 += piece[x][y];
+          break;
+      }
+    }
+  }
+  if (l1) {
+    console.log(l1);
+  }
+  if (l2) {
+    console.log(l2);
+  }
+  if (l3) {
+    console.log(l3);
+  }
+  if (l4) {
+    console.log(l4);
+  }
 }
