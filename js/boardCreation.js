@@ -55,7 +55,7 @@ function divideGrid(grid) {
   while (unplacedPieces < 10) {
     var randomPiece = blocks[Math.floor(Math.random() * 6)];
     randomPiece = rotatePiece(randomPiece, Math.floor(Math.random() * 4));
-    randomPiece = isolate(randomPiece);
+    randomPiece = isolatePiece(randomPiece);
     if (!placePiece(filling, randomPiece, pieceId)) {
       unplacedPieces++;
     } else {
@@ -146,7 +146,7 @@ function rotatePiece(piece, rotation) {
   return rotated;
 }
 
-function isolate(a) {
+function isolatePiece(a) {
   var b = [];
   var zeros = false;
   for (var i in a) {
