@@ -14,7 +14,7 @@ function createGrid(paragraph) {
   function calculateDimensions(paragraph) {
     var heigth = 10;
     var gridReady = false;
-    var minWidth = 25;
+    var minWidth = 20;
     var maxWidth = 30;
     while (!gridReady) {
       if (paragraph.length / heigth < minWidth) {
@@ -43,6 +43,7 @@ function divideGrid(grid) {
   var blocks = sampleBlocks();
   var unplacedPieces = 0;
   var pieceId = 1;
+  var workIt = true;
 
   for (var x in grid) {
     var row = [];
@@ -53,45 +54,56 @@ function divideGrid(grid) {
   }
 
   while (unplacedPieces < 10) {
-    var randomPiece = blocks[Math.floor(Math.random() * 6)];
+    var randomPiece = blocks[Math.floor(Math.random() * blocks.length)];
     randomPiece = rotatePiece(randomPiece, Math.floor(Math.random() * 4));
     randomPiece = isolatePiece(randomPiece);
-    if (!placePiece(filling, randomPiece, pieceId)) {
-      unplacedPieces++;
-    } else {
+    if (placePiece(filling, randomPiece, pieceId)) {
       unplacedPieces = 0;
       pieceId++;
+    } else {
+      unplacedPieces++;
     }
   }
-  for (var xF = 0; xF < filling.length; xF++) {
-    for (var yF = 0; yF < filling[xF].length; yF++) {
-      while (filling[xF][yF] === 0) {
-        var side = Math.floor(Math.random() * 4);
-        switch (side) {
-          case 0:
-            if(filling[xF] && filling[xF][yF-1]) {
-              filling[xF][yF] = filling[xF][yF-1];
-            }
-            break;
-          case 1:
-            if(filling[xF+1] && filling[xF+1][yF]) {
-              filling[xF][yF] = filling[xF+1][yF];
-            }
-            break;
-          case 2:
-            if(filling[xF] && filling[xF][yF+1]) {
-              filling[xF][yF] = filling[xF][yF+1];
-            }
-            break;
-          case 3:
-            if(filling[xF-1] && filling[xF-1][yF]) {
-              filling[xF][yF] = filling[xF-1][yF];
-            }
-            break;
-        }
-      }
-    }
-  }
+  //TODO loop over zeros
+  //IDEA Array of posibilities, if void, ignore cell and ask for a rework, loop until no reworks
+  // while(workIt) {
+  //   //FIXME I think here, like 1/10 times, is on a infinite loop (noting at any side)
+  //   workIt = false;
+  //   for (var xF = 0; !workIt && xF < filling.length; xF++) {
+  //     for (var yF = 0; !workIt && yF < filling[xF].length; yF++) {
+  //       while (!workIt && filling[xF][yF] === 0) {
+  //         console.log('infinite loop?');
+  //         var side = Math.floor(Math.random() * 4);
+  //         switch (side) {
+  //           case 0:
+  //           if(filling[xF] && filling[xF][yF-1]) {
+  //             filling[xF][yF] = filling[xF][yF-1];
+  //           }
+  //           break;
+  //           case 1:
+  //           if(filling[xF+1] && filling[xF+1][yF]) {
+  //             filling[xF][yF] = filling[xF+1][yF];
+  //           }
+  //           break;
+  //           case 2:
+  //           if(filling[xF] && filling[xF][yF+1]) {
+  //             filling[xF][yF] = filling[xF][yF+1];
+  //           }
+  //           break;
+  //           case 3:
+  //           if(filling[xF-1] && filling[xF-1][yF]) {
+  //             filling[xF][yF] = filling[xF-1][yF];
+  //           }
+  //           break;
+  //         }
+  //         if(!(filling[xF+1] || filling[xF-1] || filling[xF][yF-1] || filling[xF][yF+1])) {
+  //           workIt = true;
+  //           console.log('Need to start over!');
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
   consoleShowGrid(filling);
 }
 
@@ -182,53 +194,4 @@ function isolatePiece(a) {
     }
   }
   return c;
-}
-
-function sampleBlocks() {
-  //We are gonna use tetris blocks as first sample
-  var pieces = [
-    [
-      [1, 0, 0, 0],
-      [1, 0, 0, 0],
-      [1, 0, 0, 0],
-      [1, 0, 0, 0]
-    ],
-    [
-      [1, 0, 0, 0],
-      [1, 0, 0, 0],
-      [1, 1, 0, 0],
-      [0, 0, 0, 0]
-    ],
-    [
-      [0, 1, 0, 0],
-      [1, 1, 1, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ],
-    [
-      [1, 1, 0, 0],
-      [1, 1, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ],
-    [
-      [1, 0, 0, 0],
-      [1, 1, 0, 0],
-      [0, 1, 0, 0],
-      [0, 0, 0, 0]
-    ],
-    [
-      [0, 1, 0, 0],
-      [1, 1, 0, 0],
-      [1, 0, 0, 0],
-      [0, 0, 0, 0]
-    ],
-    [
-      [0, 1, 0, 0],
-      [0, 1, 0, 0],
-      [1, 1, 0, 0],
-      [0, 0, 0, 0]
-    ],
-  ];
-  return pieces;
 }
