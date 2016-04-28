@@ -43,7 +43,7 @@ function divideGrid(grid) {
   var blocks = sampleBlocks();
   var unplacedPieces = 0;
   var pieceId = 1;
-  var workIt = true;
+  var work = true;
 
   for (var x in grid) {
     var row = [];
@@ -64,46 +64,76 @@ function divideGrid(grid) {
       unplacedPieces++;
     }
   }
-  //TODO loop over zeros
-  //IDEA Array of posibilities, if void, ignore cell and ask for a rework, loop until no reworks
-  // while(workIt) {
-  //   //FIXME I think here, like 1/10 times, is on a infinite loop (noting at any side)
-  //   workIt = false;
-  //   for (var xF = 0; !workIt && xF < filling.length; xF++) {
-  //     for (var yF = 0; !workIt && yF < filling[xF].length; yF++) {
-  //       while (!workIt && filling[xF][yF] === 0) {
-  //         console.log('infinite loop?');
-  //         var side = Math.floor(Math.random() * 4);
-  //         switch (side) {
-  //           case 0:
-  //           if(filling[xF] && filling[xF][yF-1]) {
-  //             filling[xF][yF] = filling[xF][yF-1];
-  //           }
-  //           break;
-  //           case 1:
-  //           if(filling[xF+1] && filling[xF+1][yF]) {
-  //             filling[xF][yF] = filling[xF+1][yF];
-  //           }
-  //           break;
-  //           case 2:
-  //           if(filling[xF] && filling[xF][yF+1]) {
-  //             filling[xF][yF] = filling[xF][yF+1];
-  //           }
-  //           break;
-  //           case 3:
-  //           if(filling[xF-1] && filling[xF-1][yF]) {
-  //             filling[xF][yF] = filling[xF-1][yF];
-  //           }
-  //           break;
-  //         }
-  //         if(!(filling[xF+1] || filling[xF-1] || filling[xF][yF-1] || filling[xF][yF+1])) {
-  //           workIt = true;
-  //           console.log('Need to start over!');
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+  consoleShowGrid(filling);
+  while (work) {
+    work = false;
+    for (var xF = 0; xF < filling.length; xF++) {
+      for (var yF = 0; yF < filling[xF].length; yF++) {
+        var posibilities = [];
+        if (filling[xF][yF] === 0) {
+          if (filling[xF - 1] && filling[xF - 1][yF]) {
+            posibilities.push({
+              position: 'top',
+              value: filling[xF - 1][yF]
+            });
+          }
+          if (filling[xF][yF + 1]) {
+            posibilities.push({
+              position: 'right',
+              value: filling[xF][yF + 1]
+            });
+          }
+          if (filling[xF + 1] && filling[xF + 1][yF]) {
+            posibilities.push({
+              position: 'bottom',
+              value: filling[xF + 1][yF]
+            });
+          }
+          if (filling[xF][yF - 1]) {
+            posibilities.push({
+              position: 'left',
+              value: filling[xF][yF - 1]
+            });
+          }
+          if (posibilities.length === 0) {
+            work = true;
+            console.log('rework');
+          } else {
+            var noRepeats = posibilities.filter(function(element, index, originalArray) {
+              var repeated = false;
+              for (var i in originalArray) {
+                if (originalArray[i].value == element.value) {
+                  repeated = true;
+                }
+              }
+              return !repeated;
+            });
+            if (noRepeats.length === 0) {
+              filling[xF][yF] = posibilities[0].value;
+              console.log('no choices... generate a block on ' + xF + ',' + yF + ' : ' + JSON.stringify(posibilities));
+            } else {
+              filling[xF][yF] = noRepeats[Math.floor(Math.random() * noRepeats.length)].value;
+            }
+          }
+        }
+      }
+    }
+  }
+  var count = {};
+  for (var i = 0; i < filling.length; i++) {
+    for (var j = 0; j < filling[i].length; j++) {
+      if (count[filling[i][j]]) {
+        count[filling[i][j]] += 1;
+      } else {
+        count[filling[i][j]] = 1;
+      }
+    }
+  }
+  var line = '';
+  for(var a in count) {
+    line += a + ':' + count[a] + ', ';
+  }
+  console.log(line);
   consoleShowGrid(filling);
 }
 
