@@ -1,8 +1,12 @@
+var Debug = false;
 function init() {
   var paragraph = getParagraph();
   var grid = createGrid(paragraph);
   var pieces = divideGrid(grid);
-  showGrid(grid);
+  pieces = shufflePieces(pieces);
+  var hintGrid = toHints(grid);
+  showGrid(hintGrid);
+  showPieces(pieces);
 }
 
 function getParagraph() {
@@ -29,16 +33,74 @@ function showGrid(grid) {
   $('body').append(table);
 }
 
+function showPiece(piece) {
+  var table = $('<table>');
+  table.addClass('piece');
+  for (var x = 0; x < piece.length; x++) {
+    var row = $('<tr>');
+    for (var y = 0; y < piece[x].length; y++) {
+      var element = $('<td>').text(piece[x][y]);
+      if (piece[x][y] === ' ' || piece[x][y] === '') {
+        element.addClass('whitespace');
+      }
+      if (piece[x][y] === 0) {
+        element.text('');
+        element.addClass('void');
+      }
+      row.append(element);
+    }
+    table.append(row);
+  }
+  $('body').append(table);
+}
+
 function consoleShowGrid(grid) {
-  var displayGrid = [];
-  for (var x in grid) {
-    displayGrid.push('');
-    for (var y in grid[x]) {
-      displayGrid[x] += grid[x][y] < 10 ? '  ' + grid[x][y] : ' ' + grid[x][y];
+  if(Debug) {
+    var displayGrid = [];
+    for (var x in grid) {
+      displayGrid.push('');
+      for (var y in grid[x]) {
+        displayGrid[x] += grid[x][y] < 10 ? '  ' + grid[x][y] : ' ' + grid[x][y];
+      }
+    }
+    console.log('');
+    for (var xG in displayGrid) {
+      console.log(displayGrid[xG] + '  -  ' + xG);
     }
   }
-  console.log('');
-  for (var xG in displayGrid) {
-    console.log(displayGrid[xG] + '  -  ' + xG);
+}
+
+function shufflePieces(pieces) {
+  var shuffled = [];
+  var length = pieces.length;
+  var rand;
+
+  while (length) {
+    rand = Math.floor(Math.random() * length--);
+    shuffled.push(pieces.splice(rand, 1)[0]);
   }
+
+  return shuffled;
+}
+
+function showPieces(pieces) {
+  for(var i in pieces) {
+    showPiece(pieces[i].piece);
+  }
+}
+
+function toHints(grid) {
+  var hints = [];
+  for (var x in grid) {
+    var row = [];
+    for (var y in grid[x]) {
+      if(x == y || grid[x].length - x == y || grid[x].length + y == x) {
+        row.push(grid[x][y]);
+      } else {
+        row.push('  ');
+      }
+    }
+    hints.push(row);
+  }
+  return hints;
 }

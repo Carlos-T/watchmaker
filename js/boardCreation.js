@@ -16,6 +16,7 @@ function createGrid(paragraph) {
     var gridReady = false;
     var minWidth = 20;
     var maxWidth = 30;
+    var paragraphSubs = paragraph.replace(/\,/, '').replace(/\./, '');
     while (!gridReady) {
       if (paragraph.length / heigth < minWidth) {
         heigth--;
@@ -29,9 +30,15 @@ function createGrid(paragraph) {
   }
 
   function fillGrid(grid, paragraph) {
+    var offset = 0;
     for (var x = 0; x < grid.length; x++) {
       for (var y = 0; y < grid[x].length; y++) {
-        grid[x][y] = paragraph.charAt(x * grid[x].length + y);
+        grid[x][y] = paragraph.charAt(x * grid[x].length + y + offset);
+        if (paragraph.charAt(x * grid[x].length + y + offset + 1) === ',' ||
+          paragraph.charAt(x * grid[x].length + y + offset + 1) === '.') {
+          grid[x][y] += paragraph.charAt(x * grid[x].length + y + offset + 1);
+          offset++;
+        }
       }
     }
     return grid;
@@ -40,6 +47,7 @@ function createGrid(paragraph) {
 
 function divideGrid(grid) {
   var filling = [];
+  var pieces = [];
   var blocks = sampleBlocks();
   var unplacedPieces = 0;
   var pieceId = 1;
@@ -57,7 +65,8 @@ function divideGrid(grid) {
     var randomPiece = blocks[Math.floor(Math.random() * blocks.length)];
     randomPiece = rotatePiece(randomPiece, Math.floor(Math.random() * 4));
     randomPiece = isolatePiece(randomPiece);
-    if (placePiece(filling, randomPiece, pieceId)) {
+    if (placePiece(filling, randomPiece, pieceId, grid)) {
+      pieces.push({id: pieceId, piece: randomPiece});
       unplacedPieces = 0;
       pieceId++;
     } else {
@@ -97,7 +106,7 @@ function divideGrid(grid) {
           }
           if (posibilities.length === 0) {
             work = true;
-            console.log('rework');
+            if(Debug) console.log('rework');
           } else {
             var noRepeats = posibilities.filter(function(element, index, originalArray) {
               var repeated = false;
@@ -109,8 +118,8 @@ function divideGrid(grid) {
               return !repeated;
             });
             if (noRepeats.length === 0) {
-              filling[xF][yF] = posibilities[0].value;
-              console.log('no choices... generate a block on ' + xF + ',' + yF + ' : ' + JSON.stringify(posibilities));
+              filling[xF][yF] = posibilities[Math.floor(Math.random() * posibilities.length)].value;
+              if(Debug) console.log('no choices... generating a block on ' + xF + ',' + yF + ' : ' + JSON.stringify(posibilities));
             } else {
               filling[xF][yF] = noRepeats[Math.floor(Math.random() * noRepeats.length)].value;
             }
@@ -130,14 +139,15 @@ function divideGrid(grid) {
     }
   }
   var line = '';
-  for(var a in count) {
+  for (var a in count) {
     line += a + ':' + count[a] + ', ';
   }
-  console.log(line);
+  if(Debug) console.log(line);
   consoleShowGrid(filling);
+  return pieces;
 }
 
-function placePiece(grid, piece, pieceId) {
+function placePiece(grid, piece, pieceId, originalGrid) {
   var placed = false;
   for (var x = 0; !placed && x < grid.length; x++) {
     for (var y = 0; !placed && y < grid[x].length; y++) {
@@ -145,6 +155,7 @@ function placePiece(grid, piece, pieceId) {
         for (var xP = 0; xP < piece.length; xP++) {
           for (var yP = 0; yP < piece[xP].length; yP++) {
             if (piece[xP][yP] !== 0) {
+              piece[xP][yP] = originalGrid[x + xP][y + yP];
               grid[x + xP][y + yP] = pieceId;
               placed = true;
             }
