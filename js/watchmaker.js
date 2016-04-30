@@ -1,15 +1,16 @@
-var Debug = false;
+var Debug = true;
 function init() {
   var paragraph = getParagraph();
   var grid = createGrid(paragraph);
   var pieces = divideGrid(grid);
-  pieces = shufflePieces(pieces);
+  // pieces = shufflePieces(pieces);
   var hintGrid = toHints(grid);
   showGrid(hintGrid);
   showPieces(pieces);
 }
 
 function getParagraph() {
+  //Can't have the character '0'
   var paragraph = "Mi dibujo no representaba un sombrero. Representaba una serpiente boa que digería un elefante. Dibujé entonces el interior de la serpiente boa a fin de que las personas grandes pudiesen comprender. Siempre necesitan explicaciones.";
   var paragraph2 = "Una de sus más importantes habilidades será, siempre, la de extraer de cuanto lo rodea la esencia y la energía que le permitan vivir y crecer artísticamente. Y lo mismo de las personas. Las exprime, utilizando lo mejor de cada una.";
   var paragraph3 = "La verdadera amistad es planta de lento crecimiento que debe sufrir y vencer los embates del infortunio antes de que sus frutos lleguen a completa madurez"; //27
@@ -85,7 +86,7 @@ function shufflePieces(pieces) {
 
 function showPieces(pieces) {
   for(var i in pieces) {
-    showPiece(pieces[i].piece);
+    showPiece(pieces[i]);
   }
 }
 

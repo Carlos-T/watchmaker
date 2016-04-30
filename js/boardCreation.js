@@ -66,7 +66,6 @@ function divideGrid(grid) {
     randomPiece = rotatePiece(randomPiece, Math.floor(Math.random() * 4));
     randomPiece = isolatePiece(randomPiece);
     if (placePiece(filling, randomPiece, pieceId, grid)) {
-      pieces.push({id: pieceId, piece: randomPiece});
       unplacedPieces = 0;
       pieceId++;
     } else {
@@ -128,6 +127,7 @@ function divideGrid(grid) {
       }
     }
   }
+  pieces = getPieces(filling, grid, pieceId);
   var count = {};
   for (var i = 0; i < filling.length; i++) {
     for (var j = 0; j < filling[i].length; j++) {
@@ -165,6 +165,27 @@ function placePiece(grid, piece, pieceId, originalGrid) {
     }
   }
   return placed;
+}
+
+function getPieces(shapedGrid, grid, maxPieceId) {
+  var pieces = [];
+  for(var index = 1; index < maxPieceId; index++) {
+    var piece = [];
+    for(var x in shapedGrid) {
+      var row = [];
+      for(var y in shapedGrid[x]) {
+        if(shapedGrid[x][y] == index) {
+          row.push(grid[x][y]);
+        } else {
+          row.push(0);
+        }
+      }
+      piece.push(row);
+    }
+    consoleShowGrid(piece);
+    pieces.push(isolatePiece(piece));
+  }
+  return pieces;
 }
 
 function checkCollision(grid, piece, x, y) {
