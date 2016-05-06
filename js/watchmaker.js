@@ -10,7 +10,6 @@ function init() {
 }
 
 function getParagraph() {
-  //Can't have the character '0'
   var paragraph = "Mi dibujo no representaba un sombrero. Representaba una serpiente boa que digería un elefante. Dibujé entonces el interior de la serpiente boa a fin de que las personas grandes pudiesen comprender. Siempre necesitan explicaciones.";
   var paragraph2 = "Una de sus más importantes habilidades será, siempre, la de extraer de cuanto lo rodea la esencia y la energía que le permitan vivir y crecer artísticamente. Y lo mismo de las personas. Las exprime, utilizando lo mejor de cada una.";
   var paragraph3 = "La verdadera amistad es planta de lento crecimiento que debe sufrir y vencer los embates del infortunio antes de que sus frutos lleguen a completa madurez"; //27
@@ -19,19 +18,28 @@ function getParagraph() {
 }
 
 function showGrid(grid) {
-  var table = $('<table>');
-  for (var x = 0; x < grid.length; x++) {
-    var row = $('<tr>');
-    for (var y = 0; y < grid[x].length; y++) {
-      var element = $('<td>').text(grid[x][y]);
-      if (grid[x][y] === ' ' || grid[x][y] === '') {
-        element.addClass('whitespace');
+  if(grid instanceof Array) {
+    var table = $('<table>').addClass('crossword');
+    for (var x = 0; x < grid.length; x++) {
+      if(grid[x] instanceof Array) {
+        var row = $('<tr>');
+        for (var y = 0; y < grid[x].length; y++) {
+          var element = $('<td>').text(grid[x][y]);
+          if (grid[x][y] === ' ' || grid[x][y] === '') {
+            element.addClass('whitespace');
+          }
+          row.append(element);
+        }
+        table.append(row);
+      } else {
+        return false;
       }
-      row.append(element);
     }
-    table.append(row);
+    $('body').append(table);
+    return true;
+  } else {
+    return false;
   }
-  $('body').append(table);
 }
 
 function showPiece(piece) {

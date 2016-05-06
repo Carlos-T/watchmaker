@@ -1,12 +1,11 @@
 QUnit.test("sampleBlocks function testing", function(assert) {
   assert.expect(6);
 
-  var samples;
+  var samples = sampleBlocks();
 
-  assert.ok(sampleBlocks() instanceof Array, "sampleBlocks returns an array");
-  assert.ok(sampleBlocks().length > 0, "sampleBlocks returns an array with at least one item");
+  assert.ok(samples instanceof Array, "sampleBlocks returns an array");
+  assert.ok(samples.length > 0, "sampleBlocks returns an array with at least one item");
 
-  samples = sampleBlocks();
   var allArrays = true;
   for (var s1 in samples) {
     if (!(samples[s1] instanceof Array)) {
@@ -15,7 +14,6 @@ QUnit.test("sampleBlocks function testing", function(assert) {
   }
   assert.ok(allArrays, "Every sample must be an array");
 
-  samples = sampleBlocks();
   var allArraysOfArrays = true;
   for (var s21 in samples) {
     for (var s22 in samples[s21]) {
@@ -26,7 +24,6 @@ QUnit.test("sampleBlocks function testing", function(assert) {
   }
   assert.ok(allArraysOfArrays, "Every sample must be an array of arrays");
 
-  samples = sampleBlocks();
   var allNumbers = true;
   for (var s31 in samples) {
     for (var s32 in samples[s31]) {
@@ -39,7 +36,6 @@ QUnit.test("sampleBlocks function testing", function(assert) {
   }
   assert.ok(allNumbers, "Every position of the sample must be a number zero or one");
 
-  samples = sampleBlocks();
   var oneOne = true;
   for (var s41 in samples) {
     var onlyZerosPiece = true;
