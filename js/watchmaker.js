@@ -3,7 +3,7 @@ function init() {
   var paragraph = getParagraph();
   var grid = createGrid(paragraph);
   var pieces = divideGrid(grid);
-  // pieces = shufflePieces(pieces);
+  pieces = shufflePieces(pieces);
   var hintGrid = toHints(grid);
   showGrid(hintGrid);
   showPieces(pieces);
@@ -14,7 +14,7 @@ function getParagraph() {
   var paragraph2 = "Una de sus más importantes habilidades será, siempre, la de extraer de cuanto lo rodea la esencia y la energía que le permitan vivir y crecer artísticamente. Y lo mismo de las personas. Las exprime, utilizando lo mejor de cada una.";
   var paragraph3 = "La verdadera amistad es planta de lento crecimiento que debe sufrir y vencer los embates del infortunio antes de que sus frutos lleguen a completa madurez"; //27
   var paragraph4 = "Habra quien dude que los niños mas encantadores estan en España pero lo que no podra negar nadie es que los mendigos mas pintorescos se encuentran alli Fuenterrabía en aquel dia soleado estaba llena de ellos impresionandome la orgullosa insolencia con que paseaban por las calles"; //44
-  return paragraph3;
+  return paragraph4;
 }
 
 function showGrid(grid) {
@@ -60,6 +60,7 @@ function showPiece(piece) {
     }
     table.append(row);
   }
+  table.on('mousedown', tableDragged);
   $('body').append(table);
 }
 
@@ -69,7 +70,7 @@ function consoleShowGrid(grid) {
     for (var x in grid) {
       displayGrid.push('');
       for (var y in grid[x]) {
-        displayGrid[x] += grid[x][y] < 10 ? '  ' + grid[x][y] : ' ' + grid[x][y];
+        displayGrid[x] += grid[x][y] < 10 ? '  ' + grid[x][y] : typeof grid[x][y] === 'string' ? '  ' + grid[x][y] : ' ' + grid[x][y];
       }
     }
     console.log('');
@@ -112,4 +113,40 @@ function toHints(grid) {
     hints.push(row);
   }
   return hints;
+}
+
+function tableDragged(e) {
+  if (!$(e.target).hasClass('void')) {
+    var table = $(e.target).parents('table')
+    console.log(table[0].getBoundingClientRect());
+    var dX = e.clientX - table[0].getBoundingClientRect().x;
+    var dY = e.clientY - table[0].getBoundingClientRect().y;
+    console.log('e.clientX', e.clientX);
+    console.log('e.target.getBoundingClientRect().x', e.target.getBoundingClientRect().x);
+    
+    console.log('dX', dX);
+    console.log('dY', dY);
+    
+    table.addClass('moving');
+    $(document).on('mouseup', tableReleased);
+    $(document).on('mousemove', tableMoved);
+    $('.moving').css('left', e.clientX - dX - 20);
+    $('.moving').css('top', e.clientY - dY - 20);
+  }
+}
+
+function tableMoved(e) {
+  console.log($('.moving')[0].getBoundingClientRect().x);
+  $('.moving').css('left', parseInt($('.moving').css('left')) + e.originalEvent.movementX);
+  $('.moving').css('top', parseInt($('.moving').css('top')) + e.originalEvent.movementY);
+}
+
+function tableReleased(e) {
+  // $('.moving').css('left', '')
+  // $('.moving').css('top', '')
+  $('.moving').addClass('moved');
+  $('.moving').removeClass('moving');
+  $(document).off('mouseup', tableReleased);
+  $(document).off('mousemove', tableMoved);
+  $(e.target).removeClass('moving');
 }

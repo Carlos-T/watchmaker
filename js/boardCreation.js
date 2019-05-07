@@ -235,24 +235,20 @@ function isolatePiece(a) {
     }
   }
   var c = [];
-  for (var y = 0; y < 4; y++) {
-    zeros = true;
-    for (var x in b) {
-      if (b[x][y] !== 0) {
+  for (i in b) { 
+    c.push([]);
+  }
+  for(i in b[0]) {
+    let zeros = true;
+    for(let j = 0; j < b.length; j++) {
+      if(b[j][i] !== 0) {
         zeros = false;
       }
     }
-    c.push([]);
-    if (!zeros) {
-      for (var x1 in b) {
-        c[y].push(b[x1][y]);
+    if(!zeros) {
+      for(let j = 0; j < b.length; j++) {
+        c[j].push(b[j][i]);
       }
-    }
-  }
-  for (var x2 = 0; x2 < c.length; x2++) {
-    if (c[x2].length === 0) {
-      c.splice(x2, 1);
-      x2--;
     }
   }
   return c;
